@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   EnterIcon,
@@ -45,13 +45,17 @@ export function Navbar() {
             Sign up
           </Link>
         )}
-        <button
-          className="btn-ghost btn"
-          onClick={sessionData ? () => void signOut() : () => void signIn()}
-        >
-          {sessionData ? <ExitIcon /> : <EnterIcon />}
-          {sessionData ? "Sign out" : "Sign in"}
-        </button>
+        {sessionData ? (
+          <button className="btn-ghost btn" onClick={() => void signOut()}>
+            <ExitIcon />
+            Log out
+          </button>
+        ) : (
+          <Link href={"/login"} className="btn-ghost btn">
+            <EnterIcon />
+            Log in
+          </Link>
+        )}
       </div>
     </nav>
   );

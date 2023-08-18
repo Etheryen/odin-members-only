@@ -20,10 +20,7 @@ const formSchema = signUpSchema
 type FormSchema = z.infer<typeof formSchema>;
 
 export default function SignUp() {
-  const router = useRouter();
-
   const signUpMutation = api.auth.signUp.useMutation({
-    // TODO: actually log in the user
     onSuccess: async (data) => {
       await signIn("credentials", {
         email: data.email,
@@ -85,7 +82,7 @@ export default function SignUp() {
                 )}
               </div>
               <div className="flex flex-col">
-                <label htmlFor="firstName" className="label label-text">
+                <label htmlFor="lastName" className="label label-text">
                   Last name
                 </label>
                 <input
@@ -105,7 +102,7 @@ export default function SignUp() {
               </div>
             </div>
             <div className="flex flex-col">
-              <label htmlFor="firstName" className="label label-text">
+              <label htmlFor="email" className="label label-text">
                 Email
               </label>
               <input
@@ -125,7 +122,7 @@ export default function SignUp() {
             </div>
             <div className="flex gap-4">
               <div className="flex flex-col">
-                <label htmlFor="firstName" className="label label-text">
+                <label htmlFor="password" className="label label-text">
                   Password
                 </label>
                 <input
@@ -144,7 +141,7 @@ export default function SignUp() {
                 )}
               </div>
               <div className="flex flex-col">
-                <label htmlFor="firstName" className="label label-text">
+                <label htmlFor="confirmPassword" className="label label-text">
                   Confirm password
                 </label>
                 <input
