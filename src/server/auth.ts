@@ -1,13 +1,10 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { compare } from "bcryptjs";
 import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type NextAuthOptions,
-  type DefaultSession,
-} from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import { env } from "~/env.mjs";
+import { getServerSession, type User, type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "~/server/db";
+import { loginSchema } from "~/utils/schemas";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -16,18 +13,24 @@ import { prisma } from "~/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+  interface Session {
+    user: User;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    membershipStatus: "NOT_MEMBER" | "MEMBER";
+    adminStatus: "NOT_ADMIN" | "ADMIN";
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    user: User;
+  }
 }
 
 /**
@@ -36,20 +39,62 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt({ token, user }) {
+      if (user) return { ...token, user };
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
+      user: token.user,
     }),
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialsProvider({
+      name: "Credentials",
+      type: "credentials",
+      // `credentials` is used to generate a form on the sign in page.
+      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "jsmith@gmail.com",
+        },
+        password: { label: "Password", type: "password" },
+      },
+
+      async authorize(credentials) {
+        const parsedCredentials = loginSchema.parse(credentials);
+
+        if (!parsedCredentials) return null;
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: parsedCredentials.email,
+          },
+        });
+
+        if (!user) return null;
+
+        const isPasswordValid = await compare(
+          parsedCredentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) return null;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...userWithoutPassword } = user;
+
+        return userWithoutPassword;
+      },
     }),
     /**
      * ...add more providers here.

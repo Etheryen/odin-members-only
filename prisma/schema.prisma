@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -15,10 +14,38 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
+model Message {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    title     String
+    text      String
+    authorId  String
+    author    User     @relation(fields: [authorId], references: [id])
+}
+
+enum MembershipStatus {
+    MEMBER
+    NOT_MEMBER
+}
+
+enum AdminStatus {
+    ADMIN
+    NOT_ADMIN
+}
+
+model User {
+    id               String           @id @default(cuid())
+    firstName        String
+    lastName         String
+    email            String           @unique
+    password         String
+    membershipStatus MembershipStatus @default(NOT_MEMBER)
+    adminStatus      AdminStatus      @default(NOT_ADMIN)
+    messages         Message[]
+
+    // Necessary for Next auth
+    accounts Account[]
+    sessions Session[]
 }
 
 // Necessary for Next auth
@@ -46,16 +73,6 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
 }
 
 model VerificationToken {
