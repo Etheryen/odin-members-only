@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type z } from "zod";
 import { Layout } from "~/components/layout";
@@ -21,16 +22,22 @@ export default function LogIn() {
     await signIn("credentials", { ...data, callbackUrl: "/" });
   };
 
+  const isAuthError = useRouter().query.error === "CredentialsSignin";
+
   return (
     <Layout title="Log in" description="Log in for the members-only club">
       <div className="container flex flex-col items-center justify-center px-4 py-16 ">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold text-primary-content">Log in</h1>
+
           <form
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-2"
           >
+            {isAuthError && (
+              <div className="alert alert-error">Invalid credentials</div>
+            )}
             <div className="flex flex-col">
               <label htmlFor="email" className="label label-text">
                 Email

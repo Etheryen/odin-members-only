@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { Layout } from "~/components/layout";
