@@ -79,6 +79,7 @@ export const userRouter = createTRPCRouter({
           id: ctx.session.user.id,
         },
         data: {
+          membershipStatus: "MEMBER",
           adminStatus: "ADMIN",
         },
       });
