@@ -17,6 +17,9 @@ export default function LogIn() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
+    clearErrors,
+    watch,
   } = useForm<FormSchema>({
     resolver: zodResolver(loginSchema),
   });
@@ -31,12 +34,21 @@ export default function LogIn() {
       return;
     }
     if (result.error) {
-      setIsAuthError(true);
+      setError("email", { type: "server", message: "Invalid credentials" });
+      setError("password", { type: "server", message: "Invalid credentials" });
       setCustomIsLoading(false);
     }
   };
 
-  const [isAuthError, setIsAuthError] = useState(false);
+  watch(() => {
+    if (
+      errors.email?.message === "Invalid credentials" ||
+      errors.password?.message === "Invalid credentials"
+    ) {
+      clearErrors();
+    }
+  });
+
   const [customIsLoading, setCustomIsLoading] = useState(false);
 
   return (
@@ -50,9 +62,6 @@ export default function LogIn() {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-2"
           >
-            {isAuthError && (
-              <div className="alert alert-error">Invalid credentials</div>
-            )}
             <div className="flex flex-col">
               <label htmlFor="email" className="label label-text">
                 Email
