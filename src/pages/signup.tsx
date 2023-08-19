@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { Layout } from "~/components/layout";
@@ -19,17 +21,32 @@ const formSchema = signUpSchema
 type FormSchema = z.infer<typeof formSchema>;
 
 export default function SignUp() {
+  const router = useRouter();
+
+  const [customIsLoading, setCustomIsLoading] = useState(false);
+
   const signUpMutation = api.auth.signUp.useMutation({
     onSuccess: async (data) => {
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email: data.email,
-        password: data.password,
-        callbackUrl: "/",
+        password: getValues("password"),
+        redirect: false,
       });
+
+      if (!result) return;
+      if (result.ok) {
+        await router.push("/");
+        return;
+      }
+      if (result.error) {
+        console.error({ ERROR: result.error });
+        setCustomIsLoading(false);
+      }
     },
     onError: (error) => {
       if (error.data?.code === "CONFLICT") {
         setError("email", { type: "server", message: error.message });
+        setCustomIsLoading(false);
         return;
       }
 
@@ -41,12 +58,14 @@ export default function SignUp() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
     setError,
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
+    setCustomIsLoading(true);
     signUpMutation.mutate(data);
   };
 
@@ -69,7 +88,7 @@ export default function SignUp() {
                   type="text"
                   id="firstName"
                   {...register("firstName")}
-                  disabled={signUpMutation.isLoading}
+                  disabled={customIsLoading}
                   className={cn("input-bordered input", {
                     "input-error text-error": errors.firstName,
                   })}
@@ -88,7 +107,7 @@ export default function SignUp() {
                   type="text"
                   id="lastName"
                   {...register("lastName")}
-                  disabled={signUpMutation.isLoading}
+                  disabled={customIsLoading}
                   className={cn("input-bordered input", {
                     "input-error text-error": errors.lastName,
                   })}
@@ -108,7 +127,7 @@ export default function SignUp() {
                 type="text"
                 id="email"
                 {...register("email")}
-                disabled={signUpMutation.isLoading}
+                disabled={customIsLoading}
                 className={cn("input-bordered input", {
                   "input-error text-error": errors.email,
                 })}
@@ -128,7 +147,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   {...register("password")}
-                  disabled={signUpMutation.isLoading}
+                  disabled={customIsLoading}
                   className={cn("input-bordered input", {
                     "input-error text-error": errors.password,
                   })}
@@ -147,7 +166,7 @@ export default function SignUp() {
                   type="password"
                   id="confirmPassword"
                   {...register("confirmPassword")}
-                  disabled={signUpMutation.isLoading}
+                  disabled={customIsLoading}
                   className={cn("input-bordered input", {
                     "input-error text-error": errors.confirmPassword,
                   })}
@@ -159,10 +178,7 @@ export default function SignUp() {
                 )}
               </div>
             </div>
-            <button
-              disabled={signUpMutation.isLoading}
-              className="btn-primary btn mt-2"
-            >
+            <button disabled={customIsLoading} className="btn-primary btn mt-2">
               Submit
             </button>
           </form>
