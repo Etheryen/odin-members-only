@@ -55,7 +55,9 @@ export default function LogIn() {
     <Layout title="Log in" description="Log in for the members-only club">
       <div className="container flex flex-col items-center justify-center px-4 py-16 ">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-primary-content">Log in</h1>
+          <h1 className="pr-56 text-4xl font-bold text-primary-content">
+            Log in
+          </h1>
 
           <form
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -76,7 +78,7 @@ export default function LogIn() {
                 })}
               />
               {errors.email && (
-                <div className="label label-text-alt">
+                <div className="label label-text-alt text-error">
                   {errors.email.message}
                 </div>
               )}
@@ -95,7 +97,7 @@ export default function LogIn() {
                 })}
               />
               {errors.password && (
-                <div className="label label-text-alt">
+                <div className="label label-text-alt text-error">
                   {errors.password.message}
                 </div>
               )}

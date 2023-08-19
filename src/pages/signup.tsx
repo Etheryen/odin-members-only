@@ -25,7 +25,7 @@ export default function SignUp() {
 
   const [customIsLoading, setCustomIsLoading] = useState(false);
 
-  const signUpMutation = api.auth.signUp.useMutation({
+  const signUpMutation = api.users.signUp.useMutation({
     onSuccess: async (data) => {
       const result = await signIn("credentials", {
         email: data.email,
@@ -94,7 +94,7 @@ export default function SignUp() {
                   })}
                 />
                 {errors.firstName && (
-                  <div className="label label-text-alt">
+                  <div className="label label-text-alt text-error">
                     {errors.firstName.message}
                   </div>
                 )}
@@ -113,7 +113,7 @@ export default function SignUp() {
                   })}
                 />
                 {errors.lastName && (
-                  <div className="label label-text-alt">
+                  <div className="label label-text-alt text-error">
                     {errors.lastName.message}
                   </div>
                 )}
@@ -133,7 +133,7 @@ export default function SignUp() {
                 })}
               />
               {errors.email && (
-                <div className="label label-text-alt">
+                <div className="label label-text-alt text-error">
                   {errors.email.message}
                 </div>
               )}
@@ -153,7 +153,7 @@ export default function SignUp() {
                   })}
                 />
                 {errors.password && (
-                  <div className="label label-text-alt">
+                  <div className="label label-text-alt text-error">
                     {errors.password.message}
                   </div>
                 )}
@@ -172,7 +172,7 @@ export default function SignUp() {
                   })}
                 />
                 {errors.confirmPassword && (
-                  <div className="label label-text-alt">
+                  <div className="label label-text-alt text-error">
                     {errors.confirmPassword.message}
                   </div>
                 )}

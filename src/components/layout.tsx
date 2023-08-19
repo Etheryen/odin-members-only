@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { type PropsWithChildren } from "react";
 import { Navbar } from "./navbar";
+import { Toaster } from "react-hot-toast";
 
 interface LayoutProps extends PropsWithChildren {
   title: string;
@@ -21,6 +22,7 @@ export function Layout({ title, description, children }: LayoutProps) {
           {children}
         </main>
       </div>
+      <Toaster />
     </>
   );
 }

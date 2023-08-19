@@ -3,6 +3,7 @@ import { compare } from "bcryptjs";
 import { type GetServerSidePropsContext } from "next";
 import { getServerSession, type User, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { z } from "zod";
 import { prisma } from "~/server/db";
 import { loginSchema } from "~/utils/schemas";
 
@@ -33,6 +34,11 @@ declare module "next-auth/jwt" {
   }
 }
 
+const jwtUpdateSessionSchema = z.object({
+  membershipStatus: z.enum(["MEMBER", "NOT_MEMBER"]).optional(),
+  adminStatus: z.enum(["ADMIN", "NOT_ADMIN"]).optional(),
+});
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -44,8 +50,16 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt({ token, user }) {
-      if (user) return { ...token, user };
+    jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        const parsedSession = jwtUpdateSessionSchema.parse(session);
+        if (parsedSession.membershipStatus)
+          token.user.membershipStatus = parsedSession.membershipStatus;
+        if (parsedSession.adminStatus)
+          token.user.adminStatus = parsedSession.adminStatus;
+      }
+      if (user) token.user = user;
+
       return token;
     },
     session: ({ session, token }) => ({

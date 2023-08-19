@@ -26,13 +26,21 @@ export function Navbar() {
         {sessionData ? (
           <>
             {sessionData.user.membershipStatus === "NOT_MEMBER" && (
-              <Link href={"/member"} role="button" className="btn-ghost btn">
+              <Link
+                href={"/become-member"}
+                role="button"
+                className="btn-ghost btn"
+              >
                 <StarFilledIcon />
                 Become a <span className="text-primary">member</span>
               </Link>
             )}
             {sessionData.user.adminStatus === "NOT_ADMIN" && (
-              <Link href={"/admin"} role="button" className="btn-ghost btn">
+              <Link
+                href={"/become-admin"}
+                role="button"
+                className="btn-ghost btn"
+              >
                 <LockClosedIcon />
                 Admin mode
               </Link>
