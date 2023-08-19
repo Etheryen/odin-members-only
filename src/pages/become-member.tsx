@@ -49,7 +49,7 @@ export default function BecomeMember() {
   };
 
   const toggleHint = () => {
-    toast(`Github button is now ${isHintOpen ? "hidden" : "shown"}`, {
+    toast(`GitHub button is now ${isHintOpen ? "hidden" : "shown"}`, {
       position: "bottom-center",
       icon: "🤫",
       style: {
