@@ -30,6 +30,8 @@ export const authRouter = createTRPCRouter({
         },
       });
 
+      console.log({ newUser });
+
       return newUser;
     }),
 });

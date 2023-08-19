@@ -10,7 +10,6 @@ import {
 
 export function Navbar() {
   const { data: sessionData } = useSession();
-  console.log({ sessionData });
 
   return (
     <nav className="navbar flex-col md:flex-row">

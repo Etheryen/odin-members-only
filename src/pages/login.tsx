@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type z } from "zod";
 import { Layout } from "~/components/layout";
@@ -10,19 +11,33 @@ import { cn } from "~/utils/tailwind-merge";
 type FormSchema = z.infer<typeof loginSchema>;
 
 export default function LogIn() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isLoading },
+    formState: { errors },
   } = useForm<FormSchema>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-    await signIn("credentials", { ...data, callbackUrl: "/" });
+    setCustomIsLoading(true);
+
+    const result = await signIn("credentials", { ...data, redirect: false });
+    if (!result) return;
+    if (result.ok) {
+      await router.push("/");
+      return;
+    }
+    if (result.error) {
+      setIsAuthError(true);
+      setCustomIsLoading(false);
+    }
   };
 
-  const isAuthError = useRouter().query.error === "CredentialsSignin";
+  const [isAuthError, setIsAuthError] = useState(false);
+  const [customIsLoading, setCustomIsLoading] = useState(false);
 
   return (
     <Layout title="Log in" description="Log in for the members-only club">
@@ -46,7 +61,7 @@ export default function LogIn() {
                 type="text"
                 id="email"
                 {...register("email")}
-                disabled={isLoading}
+                disabled={customIsLoading}
                 className={cn("input-bordered input", {
                   "input-error text-error": errors.email,
                 })}
@@ -65,7 +80,7 @@ export default function LogIn() {
                 type="password"
                 id="password"
                 {...register("password")}
-                disabled={isLoading}
+                disabled={customIsLoading}
                 className={cn("input-bordered input", {
                   "input-error text-error": errors.password,
                 })}
@@ -77,7 +92,7 @@ export default function LogIn() {
               )}
             </div>
 
-            <button disabled={isLoading} className="btn-primary btn mt-2">
+            <button disabled={customIsLoading} className="btn-primary btn mt-2">
               Log in
             </button>
           </form>
