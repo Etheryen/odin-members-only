@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type z } from "zod";
 import { Layout } from "~/components/layout";
@@ -15,6 +15,10 @@ export default function NewMessage() {
   const router = useRouter();
 
   const { data: sessionData } = useSession();
+
+  useEffect(() => {
+    if (!sessionData) void router.push("/");
+  }, [router, sessionData]);
 
   const [customIsLoading, setCustomIsLoading] = useState(false);
 
@@ -35,15 +39,14 @@ export default function NewMessage() {
     resolver: zodResolver(newMessageSchema),
   });
 
-  if (!sessionData) {
-    void (async () => await router.push("/"))();
-    return null;
-  }
-
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
     addMessageMutation.mutate(data);
   };
+
+  if (!sessionData) {
+    return null;
+  }
 
   return (
     <Layout title="New message" description="Add a new message">
