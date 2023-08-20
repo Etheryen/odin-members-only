@@ -76,7 +76,7 @@ export default function BecomeMember() {
           </p>
           <p>
             Hover around and look for a{" "}
-            <span className="text-secondary">hint</span>
+            <span className="text-primary">hint</span>
           </p>
 
           <form

@@ -4,6 +4,8 @@ import {
   EnterIcon,
   ExitIcon,
   LockClosedIcon,
+  Pencil1Icon,
+  Pencil2Icon,
   PersonIcon,
   StarFilledIcon,
 } from "@radix-ui/react-icons";
@@ -12,7 +14,7 @@ export function Navbar() {
   const { data: sessionData } = useSession();
 
   return (
-    <nav className="navbar flex-col gap-4 sm:gap-0 lg:flex-row">
+    <nav className="navbar flex-col gap-4 md:gap-0 lg:flex-row">
       <div className="flex-1">
         <Link
           href={"/"}
@@ -22,9 +24,13 @@ export function Navbar() {
           <span className="text-primary">Members</span> only club
         </Link>
       </div>
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="flex flex-col gap-4 md:flex-row">
         {sessionData ? (
           <>
+            <Link href={"/new-message"} role="button" className="btn-ghost btn">
+              <Pencil2Icon />
+              New <span className="text-secondary">message</span>
+            </Link>
             {sessionData.user.membershipStatus === "NOT_MEMBER" && (
               <Link
                 href={"/become-member"}
@@ -42,7 +48,7 @@ export function Navbar() {
                 className="btn-ghost btn"
               >
                 <LockClosedIcon />
-                Admin mode
+                <span className="text-accent">Admin</span> mode
               </Link>
             )}
           </>

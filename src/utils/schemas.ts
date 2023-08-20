@@ -17,3 +17,8 @@ export const membershipSchema = z.object({
 export const adminStatusSchema = z.object({
   passcode: z.string(),
 });
+
+export const newMessageSchema = z.object({
+  title: z.string().min(1),
+  text: z.string().min(1),
+});
