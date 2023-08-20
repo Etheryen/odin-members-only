@@ -39,6 +39,17 @@ export const messageRouter = createTRPCRouter({
       throw new TRPCError({ code: "UNAUTHORIZED" });
 
     return ctx.prisma.message.findMany({
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            membershipStatus: true,
+            adminStatus: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },

@@ -4,7 +4,6 @@ import {
   EnterIcon,
   ExitIcon,
   LockClosedIcon,
-  Pencil1Icon,
   Pencil2Icon,
   PersonIcon,
   StarFilledIcon,
