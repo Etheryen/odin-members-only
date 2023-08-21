@@ -6,8 +6,14 @@ export const loginSchema = z.object({
 });
 
 export const signUpSchema = loginSchema.extend({
-  firstName: z.string().min(1, "First name must contain at least 1 character"),
-  lastName: z.string().min(1, "Last name must contain at least 1 character"),
+  firstName: z
+    .string()
+    .min(1, "First name must contain at least 1 character")
+    .max(50, "First name must contain at most 50 characters"),
+  lastName: z
+    .string()
+    .min(1, "Last name must contain at least 1 character")
+    .max(50, "Last name must contain at most 50 characters"),
 });
 
 export const membershipSchema = z.object({
@@ -19,6 +25,12 @@ export const adminStatusSchema = z.object({
 });
 
 export const newMessageSchema = z.object({
-  title: z.string().min(1),
-  text: z.string().min(1),
+  title: z
+    .string()
+    .min(1, "Title must contain at least 1 character")
+    .max(30, "Title must contain at most 30 characters"),
+  text: z
+    .string()
+    .min(1, "Text must contain at least 1 character")
+    .max(255, "Text must contain at most 255 characters"),
 });

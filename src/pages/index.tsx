@@ -4,6 +4,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useSession } from "next-auth/react";
 import { Layout } from "~/components/layout";
 import { api } from "~/utils/api";
+import { cn } from "~/utils/tailwind-merge";
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
         </h1>
         <div className="space-y-4 text-center">
           <p className="text-2xl">
-            Everybody can add <span className="text-secondary">messages</span>
+            Everybody can send <span className="text-secondary">messages</span>
           </p>
           <p className="text-2xl">
             Non-<span className="text-primary">members</span> can only see
@@ -61,7 +62,7 @@ function NonMemberFeed() {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {messages.map((message) => (
         <Message key={message.id} message={message} isUserMember={false} />
       ))}
@@ -87,7 +88,7 @@ function MemberFeed() {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {messages.map((message) => (
         <Message key={message.id} message={message} isUserMember={true} />
       ))}
@@ -113,18 +114,41 @@ type MessageProps =
 dayjs.extend(relativeTime);
 
 function Message({ message, isUserMember }: MessageProps) {
+  const { data: sessionData } = useSession();
+
   const author = isUserMember
     ? `${message.author.firstName} ${message.author.lastName}`
     : "?????";
 
   return (
-    <div>
-      <div>Author: {author}</div>
-      <div>Title: {message.title}</div>
-      {isUserMember && (
-        <div>CreatedAt: {dayjs(message.createdAt).fromNow()}</div>
-      )}
-      <div>Content: {message.text}</div>
+    <div className="card max-w-lg bg-base-300">
+      <div className="card-body">
+        <h2 className="overflow-hidden text-ellipsis text-2xl font-semibold">
+          {message.title}
+        </h2>
+        {isUserMember && (
+          <p className="overflow-hidden text-ellipsis text-sm italic">
+            by{" "}
+            <span
+              className={cn({
+                "text-primary":
+                  message.author.membershipStatus === "MEMBER" &&
+                  message.author.adminStatus === "NOT_ADMIN",
+                "text-accent": message.author.adminStatus === "ADMIN",
+              })}
+            >
+              {author}
+            </span>{" "}
+            - {dayjs(message.createdAt).fromNow()}
+          </p>
+        )}
+        <p className="overflow-hidden text-ellipsis text-lg">{message.text}</p>
+        {sessionData && sessionData.user.adminStatus === "ADMIN" && (
+          <div className="card-actions mt-2 justify-end">
+            <button className="btn-error btn">Delete</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

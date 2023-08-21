@@ -53,7 +53,7 @@ export default function BecomeMember() {
       position: "bottom-center",
       icon: "🤫",
       style: {
-        backgroundColor: "hsl(var(--b2)",
+        backgroundColor: "hsl(var(--b3)",
         color: "hsl(var(--bc)",
       },
     });
