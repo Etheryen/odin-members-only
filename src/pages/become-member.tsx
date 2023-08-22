@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { type z } from "zod";
@@ -14,10 +14,14 @@ import { cn } from "~/utils/tailwind-merge";
 type FormSchema = z.infer<typeof membershipSchema>;
 
 export default function BecomeMember() {
-  const { update } = useSession();
+  const { update, status: sessionStatus } = useSession();
   const router = useRouter();
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const [isHintOpen, setIsHintOpen] = useState(false);
+
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated") void router.push("/");
+  }, [router, sessionStatus]);
 
   const becomeMemberMutation = api.users.becomeMember.useMutation({
     onSuccess: async () => {
@@ -60,6 +64,8 @@ export default function BecomeMember() {
     setIsHintOpen(!isHintOpen);
   };
 
+  if (sessionStatus !== "authenticated") return null;
+
   return (
     <Layout
       title="Become a member"
@@ -67,7 +73,7 @@ export default function BecomeMember() {
     >
       <div className="container flex flex-col items-center justify-center px-4 py-16">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-primary-content">
+          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
             Become a <span className="text-primary">member</span>
           </h1>
           <p>

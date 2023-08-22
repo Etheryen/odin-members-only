@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type z } from "zod";
 import { Layout } from "~/components/layout";
@@ -12,9 +12,13 @@ import { cn } from "~/utils/tailwind-merge";
 type FormSchema = z.infer<typeof adminStatusSchema>;
 
 export default function BecomeAdmin() {
-  const { update } = useSession();
+  const { update, status: sessionStatus } = useSession();
   const router = useRouter();
   const [customIsLoading, setCustomIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated") void router.push("/");
+  }, [router, sessionStatus]);
 
   const becomeAdminMutation = api.users.becomeAdmin.useMutation({
     onSuccess: async () => {
@@ -44,6 +48,9 @@ export default function BecomeAdmin() {
     setCustomIsLoading(true);
     becomeAdminMutation.mutate(data);
   };
+
+  if (sessionStatus !== "authenticated") return null;
+
   return (
     <Layout
       title="Become an admin"
@@ -51,7 +58,7 @@ export default function BecomeAdmin() {
     >
       <div className="container flex flex-col items-center justify-center px-4 py-16">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-primary-content">
+          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
             Become an <span className="text-accent">admin</span>
           </h1>
           <p>

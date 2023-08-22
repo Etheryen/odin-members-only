@@ -14,11 +14,11 @@ type FormSchema = z.infer<typeof newMessageSchema>;
 export default function NewMessage() {
   const router = useRouter();
 
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (!sessionData) void router.push("/");
-  }, [router, sessionData]);
+    if (sessionStatus === "unauthenticated") void router.push("/");
+  }, [router, sessionStatus]);
 
   const [customIsLoading, setCustomIsLoading] = useState(false);
 
@@ -44,21 +44,23 @@ export default function NewMessage() {
     addMessageMutation.mutate(data);
   };
 
-  if (!sessionData) {
-    return null;
-  }
+  if (!sessionData) return null;
 
   return (
     <Layout title="New message" description="Add a new message">
       <div className="container flex flex-col items-center justify-center px-4 py-16 ">
         <div className="space-y-4">
-          <h1 className="w-96 text-4xl font-bold text-primary-content">
+          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
             New <span className="text-secondary">message</span>
           </h1>
+          <p className="flex w-[80vw] sm:w-96">
+            <span className="pr-1">Hi,</span>
+            <span className="block overflow-hidden text-ellipsis text-secondary">
+              {sessionData.user.firstName}
+            </span>
+          </p>
           <p>
-            Hi{" "}
-            <span className="text-secondary">{sessionData.user.firstName}</span>
-            , what&apos;s on your mind?
+            What&apos;s on <span className="text-secondary">your</span> mind?
           </p>
           <form
             // eslint-disable-next-line @typescript-eslint/no-misused-promises

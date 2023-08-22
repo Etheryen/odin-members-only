@@ -55,7 +55,7 @@ export default function LogIn() {
     <Layout title="Log in" description="Log in for the members-only club">
       <div className="container flex flex-col items-center justify-center px-4 py-16 ">
         <div className="space-y-4">
-          <h1 className="w-96 text-4xl font-bold text-primary-content">
+          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
             Log in
           </h1>
 

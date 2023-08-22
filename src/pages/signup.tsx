@@ -73,7 +73,9 @@ export default function SignUp() {
     <Layout title="Sign up" description="Sign up for the members-only club">
       <div className="container flex flex-col items-center justify-center px-4 py-16 ">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-primary-content">Sign up</h1>
+          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
+            Sign up
+          </h1>
           <form
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit(onSubmit)}
