@@ -2,9 +2,17 @@ import { type Message, type User } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { Layout } from "~/components/layout";
 import { api } from "~/utils/api";
 import { cn } from "~/utils/tailwind-merge";
+import { atom, useAtom } from "jotai";
+import { type QueryObserverResult } from "@tanstack/react-query";
+
+const messageRefetchAtom = atom<(() => Promise<QueryObserverResult>) | null>(
+  null
+);
 
 export default function Home() {
   return (
@@ -75,7 +83,12 @@ function MemberFeed() {
     data: messages,
     isLoading,
     error,
+    refetch,
   } = api.messages.getAllForMembers.useQuery();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setRefetch] = useAtom(messageRefetchAtom);
+  setRefetch(() => refetch);
 
   if (isLoading)
     return <span className="loading loading-dots loading-lg mt-6" />;
@@ -123,14 +136,25 @@ function Message({ message, isUserMember }: MessageProps) {
   return (
     <div className="card max-w-lg bg-base-300">
       <div className="card-body">
-        <h2 className="overflow-hidden text-ellipsis text-2xl font-semibold">
-          {message.title}
-        </h2>
+        <div className="flex justify-between">
+          <h2
+            className={cn(
+              "overflow-hidden text-ellipsis text-2xl font-semibold"
+            )}
+          >
+            {message.title}
+          </h2>
+          {isUserMember && (
+            <span className="whitespace-nowrap text-right text-sm italic">
+              {dayjs(message.createdAt).fromNow()}
+            </span>
+          )}
+        </div>
         {isUserMember && (
           <p className="overflow-hidden text-ellipsis text-sm italic">
             by{" "}
             <span
-              className={cn({
+              className={cn("font-bold", {
                 "text-primary":
                   message.author.membershipStatus === "MEMBER" &&
                   message.author.adminStatus === "NOT_ADMIN",
@@ -138,17 +162,77 @@ function Message({ message, isUserMember }: MessageProps) {
               })}
             >
               {author}
-            </span>{" "}
-            - {dayjs(message.createdAt).fromNow()}
+            </span>
           </p>
         )}
         <p className="overflow-hidden text-ellipsis text-lg">{message.text}</p>
         {sessionData && sessionData.user.adminStatus === "ADMIN" && (
           <div className="card-actions mt-2 justify-end">
-            <button className="btn-error btn">Delete</button>
+            <MessageDeleteButton messageId={message.id} />
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function MessageDeleteButton({ messageId }: { messageId: string }) {
+  const [mutationToastId, setMutationToastId] = useState<string | null>(null);
+  const [customIsLoading, setCustomIsLoading] = useState(false);
+
+  const [refetchAtom] = useAtom(messageRefetchAtom);
+
+  const deleteMessageMutation = api.messages.delete.useMutation({
+    onSuccess: async () => {
+      if (!mutationToastId) return;
+
+      toast.success("Deleted successfully", {
+        position: "bottom-center",
+        style: {
+          backgroundColor: "hsl(var(--b3)",
+          color: "hsl(var(--bc)",
+        },
+        id: mutationToastId,
+      });
+
+      await refetchAtom?.();
+    },
+    onError: (error) => {
+      setCustomIsLoading(false);
+
+      if (!mutationToastId) return;
+
+      toast.error(`Error deleting: ${error.message}`, {
+        position: "bottom-center",
+        style: {
+          backgroundColor: "hsl(var(--b3)",
+          color: "hsl(var(--bc)",
+        },
+        id: mutationToastId,
+      });
+    },
+  });
+
+  const handleDeleteMessage = () => {
+    setCustomIsLoading(true);
+    const toastId = toast.loading("Deleting...", {
+      position: "bottom-center",
+      style: {
+        backgroundColor: "hsl(var(--b3)",
+        color: "hsl(var(--bc)",
+      },
+    });
+    setMutationToastId(toastId);
+    deleteMessageMutation.mutate({ id: messageId });
+  };
+
+  return (
+    <button
+      onClick={handleDeleteMessage}
+      disabled={customIsLoading}
+      className="btn-error btn"
+    >
+      Delete
+    </button>
   );
 }
