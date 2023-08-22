@@ -145,7 +145,7 @@ function Message({ message, isUserMember }: MessageProps) {
             {message.title}
           </h2>
           {isUserMember && (
-            <span className="whitespace-nowrap text-right text-sm italic">
+            <span className="whitespace-nowrap pl-4 text-right text-sm italic">
               {dayjs(message.createdAt).fromNow()}
             </span>
           )}
