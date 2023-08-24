@@ -1,11 +1,13 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(4, "Password must contain at least 4 characters"),
+  email: z.string().min(1, "Email can't be empty").optional(),
+  password: z.string().min(1, "Password can't be empty").optional(),
 });
 
-export const signUpSchema = loginSchema.extend({
+export const signUpSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(4, "Password must contain at least 4 characters"),
   firstName: z
     .string()
     .min(1, "First name must contain at least 1 character")
