@@ -184,6 +184,8 @@ function MessageDeleteButton({ messageId }: { messageId: string }) {
 
   const deleteMessageMutation = api.messages.delete.useMutation({
     onSuccess: async () => {
+      await refetchAtom?.();
+
       if (!mutationToastId) return;
 
       toast.success("Deleted successfully", {
@@ -194,8 +196,6 @@ function MessageDeleteButton({ messageId }: { messageId: string }) {
         },
         id: mutationToastId,
       });
-
-      await refetchAtom?.();
     },
     onError: (error) => {
       setCustomIsLoading(false);
