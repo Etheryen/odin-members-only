@@ -4,7 +4,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Layout } from "~/components/layout";
 import { api } from "~/utils/api";
 import { cn } from "~/utils/tailwind-merge";
 import { atom, useAtom } from "jotai";
@@ -14,33 +13,39 @@ const messageRefetchAtom = atom<(() => Promise<QueryObserverResult>) | null>(
   null
 );
 
+export function getServerSideProps() {
+  return {
+    props: {
+      layout: {
+        title: "Members only club",
+        description: "A club only for members",
+        centeredVertically: false,
+      },
+    },
+  };
+}
+
 export default function Home() {
   return (
-    <Layout
-      centeredVertically={false}
-      title="Members only club"
-      description="A club only for members"
-    >
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-center text-6xl font-black dark:text-primary-content">
-          Special club for <span className="text-primary">members</span> only
-        </h1>
-        <div className="space-y-4 text-center">
-          <p className="text-2xl">
-            Everybody can send <span className="text-secondary">messages</span>
-          </p>
-          <p className="text-2xl">
-            Non-<span className="text-primary">members</span> can only see
-            titles and contents
-          </p>
-          <p className="text-2xl">
-            Only <span className="text-primary">members</span> can see the
-            author and date
-          </p>
-        </div>
-        <MessageFeed />
+    <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <h1 className="text-center text-6xl font-black dark:text-primary-content">
+        Special club for <span className="text-primary">members</span> only
+      </h1>
+      <div className="space-y-4 text-center">
+        <p className="text-2xl">
+          Everybody can send <span className="text-secondary">messages</span>
+        </p>
+        <p className="text-2xl">
+          Non-<span className="text-primary">members</span> can only see titles
+          and contents
+        </p>
+        <p className="text-2xl">
+          Only <span className="text-primary">members</span> can see the author
+          and date
+        </p>
       </div>
-    </Layout>
+      <MessageFeed />
+    </div>
   );
 }
 

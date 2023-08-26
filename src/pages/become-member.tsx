@@ -6,12 +6,23 @@ import { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { type z } from "zod";
-import { Layout } from "~/components/layout";
 import { api } from "~/utils/api";
 import { membershipSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
 
 type FormSchema = z.infer<typeof membershipSchema>;
+
+export function getServerSideProps() {
+  return {
+    props: {
+      layout: {
+        title: "Become a member",
+        description:
+          "Provide the correct passcode and become a member of the club",
+      },
+    },
+  };
+}
 
 export default function BecomeMember() {
   const { update, status: sessionStatus } = useSession();
@@ -67,10 +78,7 @@ export default function BecomeMember() {
   if (sessionStatus !== "authenticated") return null;
 
   return (
-    <Layout
-      title="Become a member"
-      description="Provide the correct passcode and become a member of the club"
-    >
+    <>
       <div className="container flex flex-col items-center justify-center px-4 py-16">
         <div className="space-y-4">
           <h1 className="w-[80vw] text-4xl font-bold dark:text-primary-content sm:w-96">
@@ -131,6 +139,6 @@ export default function BecomeMember() {
           <GitHubLogoIcon className="h-6 w-6" />
         </a>
       )}
-    </Layout>
+    </>
   );
 }

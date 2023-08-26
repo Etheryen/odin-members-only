@@ -4,7 +4,7 @@ import { Navbar } from "./navbar";
 import { Toaster } from "react-hot-toast";
 import { cn } from "~/utils/tailwind-merge";
 
-interface LayoutProps extends PropsWithChildren {
+export interface LayoutProps extends PropsWithChildren {
   title: string;
   description: string;
   centeredVertically?: boolean;
