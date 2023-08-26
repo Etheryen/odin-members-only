@@ -22,7 +22,7 @@ export default function Home() {
       description="A club only for members"
     >
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-center text-6xl font-black text-primary-content">
+        <h1 className="text-center text-6xl font-black dark:text-primary-content">
           Special club for <span className="text-primary">members</span> only
         </h1>
         <div className="space-y-4 text-center">

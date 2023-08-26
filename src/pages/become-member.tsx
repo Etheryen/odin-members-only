@@ -73,7 +73,7 @@ export default function BecomeMember() {
     >
       <div className="container flex flex-col items-center justify-center px-4 py-16">
         <div className="space-y-4">
-          <h1 className="w-[80vw] text-4xl font-bold text-primary-content sm:w-96">
+          <h1 className="w-[80vw] text-4xl font-bold dark:text-primary-content sm:w-96">
             Become a <span className="text-primary">member</span>
           </h1>
           <p>
