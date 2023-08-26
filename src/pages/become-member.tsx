@@ -118,7 +118,7 @@ export default function BecomeMember() {
       </div>
       <button
         onClick={toggleHint}
-        className="btn-ghost btn absolute bottom-8 left-8 rounded-xl text-xs normal-case text-base-100 selection:bg-transparent selection:text-base-100 hover:text-base-content"
+        className="btn-ghost btn mt-10 self-start rounded-xl text-xs normal-case text-base-content opacity-0 hover:opacity-100 focus:opacity-100 sm:absolute sm:bottom-8 sm:left-8 sm:mt-0"
       >
         const hint = author.github.username.toLowerCase()
       </button>
@@ -126,7 +126,7 @@ export default function BecomeMember() {
         <a
           href="https://github.com/Etheryen"
           target="_blank"
-          className="btn-ghost btn absolute bottom-8 right-8 rounded-xl text-xs text-base-100 selection:bg-transparent selection:text-base-100 hover:text-base-content"
+          className="btn-ghost btn mt-2 self-end rounded-xl text-xs normal-case text-base-content opacity-0 hover:opacity-100 focus:opacity-100 sm:absolute sm:bottom-8 sm:right-8 sm:mt-0"
         >
           <GitHubLogoIcon className="h-6 w-6" />
         </a>
