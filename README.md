@@ -15,6 +15,7 @@
 
 ### Additional technologies used:
 - daisyUI as the component library
+- react-hot-toast for toasts
 - clsx and tailwind-merge for conditional tailwind classes
 - Radix Icons for icons
 - React Hook Form for handling forms
