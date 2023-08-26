@@ -1,19 +1,19 @@
 # odin-members-only
 
-A message board website with a few rules:
+## A message board website with a few rules:
 1. Everybody logged in can post messages
 2. Non-members can only see titles and contents
 3. Only members can see the author and date
 4. Admins can additionally delete messages
 
-Made with the T3 Stack:
+## Made with the T3 Stack:
 - Next.js as the Meta-Framework
 - tRPC as the backend connection method
 - NextAuth.js for authentication
 - Prisma as the ORM of choice
 - TailwindCSS as the css framework
 
-Additional technologies used:
+## Additional technologies used:
 - daisyUI as the component library
 - clsx and tailwind-merge for conditional tailwind classes
 - Radix Icons for icons
